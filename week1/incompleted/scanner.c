@@ -22,11 +22,42 @@ extern CharCode charCodes[];
 /***************************************************************/
 
 void skipBlank() {
-  // TODO
+  // CuongDD: 20/08/2014
+  while (currentChar != EOF && charCodes[currentChar] == CHAR_SPACE) {
+    readChar();
+  }
 }
 
 void skipComment() {
-  // TODO
+  // CuongDD: 20/08/2014
+  int state = 0;
+  while((currentChar != EOF) && (state != 2)) {
+    readChar();
+    switch(state) {
+      case 0:
+        if (charCodes[currentChar] != CHAR_TIMES)
+        {
+          state = 0;
+        } else {
+          state = 1;
+        }
+      break;
+      case 1:
+        if (charCodes[currentChar] == CHAR_TIMES)
+        {
+          state = 1;
+        } else if (charCodes[currentChar] == CHAR_RPAR)
+        {
+          state = 2;
+        } else {
+          state = 0;
+        }
+    }
+  }
+  if (state != 2)
+  {
+    error(ERR_ENDOFCOMMENT, lineNo, colNo);
+  }
 }
 
 Token* readIdentKeyword(void) {
@@ -59,6 +90,20 @@ Token* getToken(void) {
     // ....
     // TODO
     // ....
+  case CHAR_LPAR:
+    readChar();
+    switch(charCodes[currentChar]) {
+      case CHAR_TIMES:
+        skipComment();
+        return getToken();
+      case CHAR_PERIOD:
+        // TODO: array index processing
+        return getToken();
+      default:
+        token = makeToken(SB_LPAR, lineNo, colNo);
+        readChar();
+        return token;
+    }
   default:
     token = makeToken(TK_NONE, lineNo, colNo);
     error(ERR_INVALIDSYMBOL, lineNo, colNo);
