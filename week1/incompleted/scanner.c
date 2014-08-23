@@ -62,7 +62,32 @@ void skipComment() {
 }
 
 Token* readIdentKeyword(void) {
-  // TODO
+  Token *token;
+
+  // CuongDD: 23/8/2014
+  int state = 0;
+  while((currentChar != EOF) && state != 2 && state != 1) {
+    readChar();
+    switch(state) {
+      case 0:
+        if (charCodes[currentChar] == CHAR_LETTER || charCodes[currentChar] == CHAR_DIGIT)
+        {
+          state = 0;
+        } else if (charCodes[currentChar] == CHAR_SPACE)
+        {
+          state = 1;
+        } else {
+          state = 2;
+        }
+      break;
+    } // End of switch
+  }
+  if (state == 2)
+  {
+    error(ERR_INVALIDSYMBOL, lineNo, colNo);
+  }
+  token = makeToken(TK_IDENT, lineNo, colNo);
+  return token;
 }
 
 Token* readNumber(void) {
