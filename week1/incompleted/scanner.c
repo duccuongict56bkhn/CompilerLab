@@ -52,6 +52,7 @@ void skipComment() {
         } else {
           state = 0;
         }
+      break;
     }
   }
   if (state != 2)
@@ -95,6 +96,7 @@ Token* getToken(void) {
     switch(charCodes[currentChar]) {
       case CHAR_TIMES:
         skipComment();
+        readChar();
         return getToken();
       case CHAR_PERIOD:
         // TODO: array index processing
