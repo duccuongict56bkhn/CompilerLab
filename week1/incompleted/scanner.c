@@ -62,9 +62,8 @@ void skipComment() {
 }
 
 Token* readIdentKeyword(void) {
-  Token *token;
-
   // CuongDD: 23/8/2014
+  Token *token;
   int state = 0;
   while((currentChar != EOF) && state != 2 && state != 1) {
     readChar();
@@ -91,11 +90,73 @@ Token* readIdentKeyword(void) {
 }
 
 Token* readNumber(void) {
-  // TODO
+  // CuongDD: 23/8/2014
+  Token *token;
+  int state = 0;
+  while((currentChar != EOF) && state != 2 && state != 1) {
+    readChar();
+    switch(state) {
+      case 0:
+        if (charCodes[currentChar] == CHAR_DIGIT)
+        {
+          state = 0;
+        } else if (charCodes[currentChar] == CHAR_SPACE)
+        {
+          state = 1;
+        } else {
+          state = 2;
+        }
+      break;
+    } // End of switch
+  }
+  if (state == 2)
+  {
+    error(ERR_INVALIDSYMBOL, lineNo, colNo);
+  }
+  token = makeToken(TK_NUMBER, lineNo, colNo);
+  return token;
 }
 
 Token* readConstChar(void) {
-  // TODO
+  // CuongDD: 23/8/2014
+  Token *token;
+  int state = 0;
+  while ((currentChar != EOF) && (state != 4) && (state != 3)) {
+    readChar();
+    switch(state) {
+      case 0:
+        if (charCodes[currentChar] == CHAR_SINGLEQUOTE) {
+          state = 2;
+        }
+        else if ((charCodes[currentChar] == CHAR_LETTER)
+          || (charCodes[currentChar] == CHAR_DIGIT)) {
+          state = 1;
+        } else { 
+          state = 3;
+        }
+      break;
+      case 1:
+        if ((charCodes[currentChar] == CHAR_SINGLEQUOTE) || (currentChar == EOF)) {
+          state = 2;
+        }
+        else {
+          state = 3;
+        }
+      break;
+      case 2:
+        if (charCodes[currentChar] == CHAR_SPACE) {
+          state = 4;
+        } else {
+          state = 3;
+        }
+      break;
+    }
+  }
+  if (state == 4) {
+    error(ERR_INVALIDCHARCONSTANT, lineNo, colNo);
+  }
+  token = makeToken(TK_CHAR, lineNo, colNo);
+  return token;
 }
 
 Token* getToken(void) {
@@ -113,9 +174,6 @@ Token* getToken(void) {
     token = makeToken(SB_PLUS, lineNo, colNo);
     readChar(); 
     return token;
-    // ....
-    // TODO
-    // ....
   case CHAR_LPAR:
     readChar();
     switch(charCodes[currentChar]) {
@@ -131,6 +189,7 @@ Token* getToken(void) {
         readChar();
         return token;
     }
+  case CHAR_SINGLEQUOTE: return readConstChar();
   default:
     token = makeToken(TK_NONE, lineNo, colNo);
     error(ERR_INVALIDSYMBOL, lineNo, colNo);
@@ -226,7 +285,7 @@ int main(int argc, char *argv[]) {
     printf("Can\'t read input file!\n");
     return -1;
   }
-    
+   
   return 0;
 }
 
