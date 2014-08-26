@@ -174,6 +174,29 @@ Token* getToken(void) {
     token = makeToken(SB_PLUS, lineNo, colNo);
     readChar(); 
     return token;
+  case CHAR_MINUS:
+    token = makeToken(SB_MINUS, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_TIMES:
+    token = makeToken(SB_TIMES, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_LT:
+    token = makeToken(SB_LT, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_GT:
+    token = makeToken(SB_GT, lineNo, colNo);
+    readChar();
+    return token;
+  case CHAR_EXCLAIMATION:
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token = makeToken(SB_NEQ, lineNo, colNo);
+      readChar();
+      return token;
+    }
   case CHAR_LPAR:
     readChar();
     switch(charCodes[currentChar]) {
@@ -190,6 +213,7 @@ Token* getToken(void) {
         return token;
     }
   case CHAR_SINGLEQUOTE: return readConstChar();
+
   default:
     token = makeToken(TK_NONE, lineNo, colNo);
     error(ERR_INVALIDSYMBOL, lineNo, colNo);
