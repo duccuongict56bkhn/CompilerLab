@@ -63,8 +63,10 @@ void skipComment() {
 
 Token* readIdentKeyword(void) {
   // CuongDD: 23/8/2014
-  Token *token;
+  Token *token = makeToken(TK_IDENT, lineNo, colNo);
   int state = 0;
+  int count = 0;
+
   while((currentChar != EOF) && state != 2 && state != 1) {
     readChar();
     switch(state) {
@@ -72,6 +74,8 @@ Token* readIdentKeyword(void) {
         if (charCodes[currentChar] == CHAR_LETTER || charCodes[currentChar] == CHAR_DIGIT)
         {
           state = 0;
+          // Save the string so that we can check whether it's keyword
+          token->string[count++] = currentChar;
         } else if (charCodes[currentChar] == CHAR_SPACE)
         {
           state = 1;
@@ -81,11 +85,25 @@ Token* readIdentKeyword(void) {
       break;
     } // End of switch
   }
+  token->string[count] = '\0';
+
   if (state == 2)
   {
     error(ERR_INVALIDSYMBOL, lineNo, colNo);
   }
-  token = makeToken(TK_IDENT, lineNo, colNo);
+
+  // The identifier is too long
+  if (count > MAX_IDENT_LEN) {
+    error(ERR_IDENTTOOLONG, lineNo, colNo);
+  } else {
+    // If token a keyword, then return a keyword
+    Token tkType = checkKeyword(token->string);
+
+    // Else
+    if (tkType != TK_NONE) {
+      token->tokenType = tkType;
+    }
+  }
   return token;
 }
 
@@ -197,6 +215,30 @@ Token* getToken(void) {
       readChar();
       return token;
     }
+  case CHAR_EQ:
+    readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token = makeToken(SB_ASSIGN, lineNo, colNo);
+      readChar();
+      return token;
+    } else {
+      token = makeToken(SB_EQ, lineNo, colNo);
+      readChar();
+      return token;
+    }
+  case CHAR_PERIOD:
+    readChar();
+    if (charCodes[currentChar] == CHAR_RPAR) {
+      token = makeToken(SB_RSEL, lineNo, colNo);
+    } else {
+      token = makeToken(SB_PERIOD, lineNo, colNo);
+    }
+    readChar();
+    return token;
+  case CHAR_COMMA:
+      token = makeToken(SB_COMMA, lineNo, colNo);
+      readChar();
+      return token;
   case CHAR_LPAR:
     readChar();
     switch(charCodes[currentChar]) {
@@ -205,8 +247,9 @@ Token* getToken(void) {
         readChar();
         return getToken();
       case CHAR_PERIOD:
-        // TODO: array index processing
-        return getToken();
+        token = makeToken(SB_LSEL, lineNo, colNo);
+        readChar();
+        return token;
       default:
         token = makeToken(SB_LPAR, lineNo, colNo);
         readChar();
