@@ -145,10 +145,11 @@ Token* readNumber(void) {
 
 Token* readConstChar(void) {
   // CuongDD: 23/8/2014
-  Token *token;
+  Token *token = makeToken(TK_CHAR, lineNo, colNo);
   int state = 0;
+  int index = 0;
+
   while ((currentChar != EOF) && (state != 4) && (state != 3)) {
-    readChar();
     switch(state) {
       case 0:
         if (charCodes[currentChar] == CHAR_SINGLEQUOTE) {
@@ -168,6 +169,7 @@ Token* readConstChar(void) {
         else {
           state = 3;
         }
+        //token->string[index++] = currentChar;
       break;
       case 2:
         if (charCodes[currentChar] == CHAR_SPACE) {
@@ -175,13 +177,18 @@ Token* readConstChar(void) {
         } else {
           state = 3;
         }
+        //token->string[index++] = currentChar;
       break;
     }
+    token->string[index++] = currentChar;
+    readChar();
   }
+
+  token->string[index] = '\0';
+
   if (state == 4) {
     error(ERR_INVALIDCHARCONSTANT, lineNo, colNo);
   }
-  token = makeToken(TK_CHAR, lineNo, colNo);
   return token;
 }
 

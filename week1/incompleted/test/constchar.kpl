@@ -1,0 +1,7 @@
+Program ConstChar;
+
+Var n : CHAR;
+
+Begin
+	n := 'CharConst' ;
+End.
