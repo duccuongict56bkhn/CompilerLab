@@ -1,7 +1,7 @@
-Program ConstChar;
+PROGRAM Program1;
 
-Var n : CHAR(.12.);
+VAR char1 : CHAR;
 
-Begin
-	n := 'C' ;
-End.
+BegIN
+	char1 := ''';
+END.

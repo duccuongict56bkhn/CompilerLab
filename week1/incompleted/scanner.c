@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "reader.h"
 #include "charcode.h"
@@ -109,96 +110,30 @@ Token* readNumber(void) {
   return token;
 }
 
-// Token* readNumber(void) {
-//   // CuongDD: 23/8/2014
-//   Token *token = makeToken(TK_NUMBER, lineNo, colNo);
-//   int state = 0;
-//   int index = 0;
+Token* readConstChar(void) { 
+	Token * token; 
+	int beginColNo = colNo; 
+	int beginLineNo = lineNo; 
+	char string[MAX_IDENT_LEN + 1]; 
 
-//   while((currentChar != EOF) && state != 2 && state != 1) {
-//     switch(state) {
-//       case 0:
-//         if (charCodes[currentChar] == CHAR_DIGIT)
-//         {
-//           state = 0;
-//         } else if (charCodes[currentChar] == CHAR_SPACE)
-//         {
-//           state = 1;
-//         } else {
-//           state = 2;
-//         }
-//         token->string[index++] = currentChar;
-//       break;
-//     } // End of switch
-//     readChar();
-//   }
+	readChar(); 
+	string[0] = currentChar; 
+	string[1] = '\0'; 
+	readChar(); 
 
-//   // Dunno but we have to end the token string
-//   token->string[index] = '\0';
-//   if (state == 2)
-//   {
-//     token->tokenType = TK_NONE;
-//     error(ERR_INVALIDSYMBOL, lineNo, colNo);
-//   }
-//   return token;
-// }
-
-Token* readConstChar(void) {
-  // CuongDD: 23/8/2014
-  Token* token = makeToken(TK_CHAR, lineNo, colNo);
-
-  // Read next character
-  readChar();
-
-  if (currentChar == EOF) {
-    error(ERR_INVALIDCHARCONSTANT, token->lineNo, token->colNo);
-  } else {
-  switch(charCodes[currentChar]) {
-  // Escape character for Single Quote:
-  case CHAR_SINGLEQUOTE:
-    // Read next character
-    readChar();
-
-    if (charCodes[currentChar] == CHAR_SINGLEQUOTE) {
-        token->string[0] = currentChar;
-
-        readChar();
-        if (charCodes[currentChar] == CHAR_SINGLEQUOTE) {
-            token->string[1] = '\0';
-
-            readChar();
-            return token;
-        } else {
-            error(ERR_INVALIDCHARCONSTANT, token->lineNo, token->colNo);
-        }
-
-    } else {
-      error(ERR_INVALIDCHARCONSTANT, token->lineNo, token->colNo);
-    }
-    break;
-  default:
-      // Add the character to token string
-        token->string[0] = currentChar;
-
-    // Read next character
-    readChar();
-
-    switch(charCodes[currentChar]) {
-    case CHAR_SINGLEQUOTE:
-      // End token
-      token->string[1] = '\0';
-
-      readChar();
-      return token;
-    default:
-      error(ERR_INVALIDCHARCONSTANT, token->lineNo, token->colNo);
-      break;
-    }
-    break;
-  }
-  }
-  return token;
+	switch (charCodes[currentChar]) { 
+		case CHAR_SINGLEQUOTE: 
+			token = makeToken(TK_CHAR, beginLineNo, beginColNo); 
+			strcpy(token->string, string); 
+			readChar(); 
+			return token; 
+		default: 
+			token = makeToken(TK_NONE, lineNo, colNo); 
+			error(ERR_INVALIDCHARCONSTANT, beginColNo, beginLineNo);
+			return token; 
+	} 
 }
+
 
 Token* getToken(void) {
   Token *token;
