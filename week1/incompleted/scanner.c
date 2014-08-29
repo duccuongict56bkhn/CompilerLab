@@ -226,10 +226,18 @@ Token* getToken(void) {
   case CHAR_LT:
     token = makeToken(SB_LT, lineNo, colNo);
     readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token->tokenType = SB_LE;
+      readChar();
+    }
     return token;
   case CHAR_GT:
     token = makeToken(SB_GT, lineNo, colNo);
     readChar();
+    if (charCodes[currentChar] == CHAR_EQ) {
+      token->tokenType = SB_GE;
+      readChar();
+    }
     return token;
   case CHAR_EXCLAIMATION:
     token = makeToken(TK_NONE, lineNo, colNo);
@@ -240,16 +248,13 @@ Token* getToken(void) {
     }
     return token;
   case CHAR_EQ:
+    token = makeToken(SB_EQ, lineNo, colNo);
     readChar();
     if (charCodes[currentChar] == CHAR_EQ) {
-      token = makeToken(SB_ASSIGN, lineNo, colNo);
+      token->tokenType = SB_ASSIGN;
       readChar();
-      return token;
-    } else {
-      token = makeToken(SB_EQ, lineNo, colNo);
-      readChar();
-      return token;
     }
+    return token;
   case CHAR_PERIOD:
     token = makeToken(SB_PERIOD, lineNo, colNo);
     readChar();
