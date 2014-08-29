@@ -1,7 +1,7 @@
 Program ConstChar;
 
-Var n : CHAR;
+Var n : CHAR(.12.);
 
 Begin
-	n := 'CharConst' ;
+	n := 'C' ;
 End.

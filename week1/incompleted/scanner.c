@@ -278,6 +278,7 @@ Token* getToken(void) {
       return getToken();
     } else if (charCodes[currentChar] == CHAR_PERIOD) {
       token->tokenType = SB_LSEL;
+      readChar();
     }
 
     return token;
