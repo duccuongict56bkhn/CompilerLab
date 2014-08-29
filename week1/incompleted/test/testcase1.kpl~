@@ -1,0 +1,7 @@
+Program ConstChar;
+
+Var n : CHAR(.12.);
+
+Begin
+	n := 'C' ;
+End.

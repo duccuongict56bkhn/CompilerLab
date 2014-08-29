@@ -150,7 +150,7 @@ Token* readConstChar(void) {
   // Read next character
   readChar();
 
-  if (currentChar == -1) { // End of File
+  if (currentChar == EOF) {
     error(ERR_INVALIDCHARCONSTANT, token->lineNo, token->colNo);
   } else {
   switch(charCodes[currentChar]) {
@@ -250,10 +250,6 @@ Token* getToken(void) {
   case CHAR_EQ:
     token = makeToken(SB_EQ, lineNo, colNo);
     readChar();
-    if (charCodes[currentChar] == CHAR_EQ) {
-      token->tokenType = SB_ASSIGN;
-      readChar();
-    }
     return token;
   case CHAR_PERIOD:
     token = makeToken(SB_PERIOD, lineNo, colNo);

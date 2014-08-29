@@ -1,0 +1,7 @@
+PROGRAM Program1;
+
+VAR char1 : CHAR;
+
+BegIN
+	char1 := 'AB';
+END.
