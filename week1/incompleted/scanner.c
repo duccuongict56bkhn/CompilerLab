@@ -145,49 +145,57 @@ Token* readNumber(void) {
 
 Token* readConstChar(void) {
   // CuongDD: 23/8/2014
-  Token *token = makeToken(TK_CHAR, lineNo, colNo);
-  int state = 0;
-  int index = 0;
+  Token* token = makeToken(TK_CHAR, lineNo, colNo);
 
-  while ((currentChar != EOF) && (state != 4) && (state != 3)) {
-    switch(state) {
-      case 0:
+  // Read next character
+  readChar();
+
+  if (currentChar == -1) { // End of File
+    error(ERR_INVALIDCHARCONSTANT, token->lineNo, token->colNo);
+  } else {
+  switch(charCodes[currentChar]) {
+  // Escape character for Single Quote:
+  case CHAR_SINGLEQUOTE:
+    // Read next character
+    readChar();
+
+    if (charCodes[currentChar] == CHAR_SINGLEQUOTE) {
+        token->string[0] = currentChar;
+
+        readChar();
         if (charCodes[currentChar] == CHAR_SINGLEQUOTE) {
-          state = 2;
-        }
-        else if ((charCodes[currentChar] == CHAR_LETTER)
-          || (charCodes[currentChar] == CHAR_DIGIT)) {
-          state = 1;
-        } else { 
-          state = 3;
-        }
-      break;
-      case 1:
-        if ((charCodes[currentChar] == CHAR_SINGLEQUOTE) || (currentChar == EOF)) {
-          state = 2;
-        }
-        else {
-          state = 3;
-        }
-        //token->string[index++] = currentChar;
-      break;
-      case 2:
-        if (charCodes[currentChar] == CHAR_SPACE) {
-          state = 4;
+            token->string[1] = '\0';
+
+            readChar();
+            return token;
         } else {
-          state = 3;
+            error(ERR_INVALIDCHARCONSTANT, token->lineNo, token->colNo);
         }
-        //token->string[index++] = currentChar;
+
+    } else {
+      error(ERR_INVALIDCHARCONSTANT, token->lineNo, token->colNo);
+    }
+    break;
+  default:
+      // Add the character to token string
+        token->string[0] = currentChar;
+
+    // Read next character
+    readChar();
+
+    switch(charCodes[currentChar]) {
+    case CHAR_SINGLEQUOTE:
+      // End token
+      token->string[1] = '\0';
+
+      readChar();
+      return token;
+    default:
+      error(ERR_INVALIDCHARCONSTANT, token->lineNo, token->colNo);
       break;
     }
-    token->string[index++] = currentChar;
-    readChar();
+    break;
   }
-
-  token->string[index] = '\0';
-
-  if (state == 4) {
-    error(ERR_INVALIDCHARCONSTANT, lineNo, colNo);
   }
   return token;
 }
