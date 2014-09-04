@@ -1,0 +1,19 @@
+(***********************
+ * Ultimate Test
+ *---------*------------*
+ * DucCuongICT         **)
+ PROGRAM testing;
+ VAR A : integer;
+ 	 B : cHaR;
+ 	 C : INteGER;
+ 	 Arra : CHAR Array(.10,12.);
+
+BEGIN
+	A := 4;
+	CALL WRITEC(Array(.A.));
+	B := '%';
+	IF (A = 4) THEN
+		BEGIN
+			CALL WRITEC(B);
+		END;
+END;
