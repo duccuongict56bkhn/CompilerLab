@@ -68,7 +68,6 @@ Token* readIdentKeyword(void) {
   // CuongDD: 28/08/2014
   Token *token = makeToken(TK_IDENT, lineNo, colNo);
   int index = 0;
-
   // If the next char is alphnumeric, keep reading
   while(charCodes[currentChar] == CHAR_LETTER || charCodes[currentChar] == CHAR_DIGIT) {
     token->string[index++] = currentChar;

@@ -1,0 +1,24 @@
+PROGRAM
+CONST
+TYPE
+VAR
+PROCEDURE
+FUNCTION
+BEGIN
+END
+ARRAY
+OF
+INTEGER
+CHAR
+CALL
+IF
+THEN
+ELSE
+WHILE
+DO
+FOR
+TO
+: ; . ( (. .) )
+!= = _identifier 
+:= + - *  > < >= <=
+, (* *)

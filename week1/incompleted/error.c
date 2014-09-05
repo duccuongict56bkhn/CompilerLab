@@ -27,6 +27,7 @@ void error(ErrorCode err, int lineNo, int colNo) {
     printf("%d-%d:%s\n", lineNo, colNo, ERM_NUMBERTOOLONG);
     break;
   }
-  exit(-1);
+  if(err != ERR_IDENTTOOLONG)
+	  exit(-1);
 }
 
