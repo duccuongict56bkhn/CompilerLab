@@ -83,10 +83,22 @@ void compileBlock5(void) {
 
 void compileConstDecls(void) {
   // TODO
+  assert("Parsing ConstDecls...");
+  while(lookAhead->tokenType == TK_IDENT) {
+  	compileConstDecl();
+    compileConstDecls();
+  }
+  assert("ConstDecls parsed!");
 }
 
 void compileConstDecl(void) {
-  // TODO
+  // CuongDD: 12/09/2014
+  assert("Parsing ConstDecl...");
+  eat(TK_IDENT);
+  eat(SB_EQ);
+  compileConstant();
+  eat(SB_SEMICOLON);
+  assert("ConstDecl parsed!");
 }
 
 void compileTypeDecls(void) {
@@ -128,11 +140,27 @@ void compileUnsignedConstant(void) {
 }
 
 void compileConstant(void) {
-  // TODO
+  // CuongDD: 12/09/2014
+  assert("Parsing Constant...");
+  if(lookAhead->tokenType == SB_PLUS) {
+	eat(SB_PLUS);
+	compileConstant2();
+  } else if (lookAhead->tokenType == SB_MINUS) {
+	eat(SB_MINUS);
+	compileConstant2();   
+  } else {
+  	compileConstant2();
+  }
+  assert("Constant parsed!");
 }
 
 void compileConstant2(void) {
-  // TODO
+  // CuongDD: 12/09/2014
+  if (lookAhead->tokenType == TK_IDENT) {
+  	eat(TK_IDENT);
+  } else if (lookAhead->tokenType == TK_NUMBER) {
+  	eat(TK_NUMBER);
+  }
 }
 
 void compileType(void) {

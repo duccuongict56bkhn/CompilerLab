@@ -1,0 +1,4 @@
+Program Example1; (* Example 1 *)
+const a = ;
+Begin
+End. (* Example 1 *)
