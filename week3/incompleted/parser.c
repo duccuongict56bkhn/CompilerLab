@@ -97,7 +97,7 @@ void compileConstDecl(void) {
   eat(SB_EQ);
   compileConstant();
   eat(SB_SEMICOLON);
-  assert("ConstDecl parsed!")
+  assert("ConstDecl parsed!");
 }
 
 void compileTypeDecls(void) {
@@ -113,7 +113,7 @@ void compileTypeDecl(void) {
   // CuongDD: 19/9/2014
   assert("Parsing TypeDecl...");
   eat(TK_IDENT);
-  eat(SB_EQUAL);
+  eat(SB_EQ);
   compileType();
   eat(SB_SEMICOLON);
   assert("TypeDecl parsed!");
@@ -182,9 +182,9 @@ void compileUnsignedConstant(void) {
   assert("Parsing UnsignedConstant");
   // CuongDD: 19/9/2014
   if(lookAhead->tokenType == TK_NUMBER) {
-	eat(TK_NUMBER);
+	   eat(TK_NUMBER);
   } else {
-	eat(TK_IDENT);
+	   eat(TK_IDENT);
   }
   assert("UsignedConstant parsed...");
 }
@@ -193,13 +193,13 @@ void compileConstant(void) {
   // CuongDD: 12/09/2014
   assert("Parsing Constant...");
   if(lookAhead->tokenType == SB_PLUS) {
-	eat(SB_PLUS);
-	compileConstant2();
+  	eat(SB_PLUS);
+  	compileConstant2();
   } else if (lookAhead->tokenType == SB_MINUS) {
-	eat(SB_MINUS);
-	compileConstant2();   
+  	eat(SB_MINUS);
+  	compileConstant2();   
   } else if (lookAhead->tokenType == TK_IDENT || lookAhead->tokenType == TK_NUMBER) {
-	compileConstant2();
+  	compileConstant2();
   } else {
   	eat(TK_IDENT);
   }
@@ -249,9 +249,9 @@ void compileParams(void) {
   // CuongDD: 19/9/2014
   while(lookAhead->tokenType == SB_LPAR) {
   	eat(SB_LPAR);
-	compileParam();
-	compileParam2();
-	eat(SB_RPAR);
+  	compileParam();
+  	compileParams2();
+  	eat(SB_RPAR);
   }
   assert("Params parsed!");
 }
@@ -286,7 +286,7 @@ void compileStatements(void) {
   // CuongDD: 19/9/2014
   assert("Parsing Statements...");
   compileStatement();
-  compileStatement2();
+  compileStatements2();
   assert("Statements parsed!");
 }
 
@@ -294,7 +294,7 @@ void compileStatements2(void) {
   // CuongDD: 19/9/2014
   assert("Parsing Statment2...");
   while(lookAhead->tokenType == SB_SEMICOLON) {
-	compileState();
+  	compileStatement();
   }
   assert("Statment2 parsed!");
 }
@@ -402,10 +402,10 @@ void compileArguments(void) {
   // CuongDD: 19/9/2014
   assert("Parsing Arguments...");
   while (lookAhead->tokenType == SB_LPAR) {
-	eat(SB_LPAR);
-	compileExpression();
-	compileArguments2();
-	eat(SB_RLAR);
+  	eat(SB_LPAR);
+  	compileExpression();
+  	compileArguments2();
+  	eat(SB_RPAR);
   }
   assert("Arguments parsed!");
 }
@@ -435,25 +435,25 @@ void compileCondition2(void) {
 	case SB_EQ:
 		eat(SB_EQ);
 		compileExpression();
-		break();
+		break;
 	case SB_NEQ:
 		eat(SB_NEQ);
 		compileExpression();
-		break();
+		break;
 	case SB_LE:
 		eat(SB_LE);
 		compileExpression();
-		break();
+		break;
 	case SB_GE:
 		eat(SB_GE);
 		compileExpression();
-		break();
+		break;
 	case SB_GT:
 		eat(SB_GT);
 		compileExpression();
-		break();
+		break;
     default:
-		break();
+		break;
   }
   assert("Condition2 parsed!");
 }
