@@ -41,29 +41,69 @@ Type* makeArrayType(int arraySize, Type* elementType) {
 }
 
 Type* duplicateType(Type* type) {
-  // TODO
+  // CuongDD: 9/10/2014
+  Type* newType = (Type*)malloc(sizeof(type));
+  newType->typeClass = type->typeClass;
+  newType->arraySize = type->arraySize;
+  newType->elementType = type->elementType;
+  return newType;
 }
 
 int compareType(Type* type1, Type* type2) {
-  // TODO
+  // CuongDD: 9/10/2014
+  // Compare typeClass first
+  if (type1->typeClass == type2->typeClass)
+  {
+  	// Comparing array type
+  	if (type1->typeClass == TP_ARRAY)
+  	{
+  		if (type1->arraySize == type2->arraySize)
+  		{
+  			return compareType(type1->elementType, type2->elementType);
+  		}
+  	}
+  }
+  return 0;
 }
 
 void freeType(Type* type) {
-  // TODO
+  if (type->typeClass == TP_ARRAY)
+  {
+  	freeType(type->elementType);
+  }
+  freeType(type);
 }
 
 /******************* Constant utility ******************************/
 
 ConstantValue* makeIntConstant(int i) {
-  // TODO
+  // CuongDD: 9/10/2014
+  ConstantValue *cv = (ConstantValue*)malloc(sizeof(ConstantValue));
+  cv->type = TP_INT;
+  cv->intValue = i;
+
+  return cv;	
 }
 
 ConstantValue* makeCharConstant(char ch) {
-  // TODO
+  // CuongDD: 9/10/2014
+  ConstantValue* cv = (ConstantValue*)malloc(sizeof(ConstantValue));
+  cv->type = TP_CHAR;
+  cv->charValue = ch;
+
+  return cv;
 }
 
 ConstantValue* duplicateConstantValue(ConstantValue* v) {
-  // TODO
+  // CuongDD: 9/10/2014
+  ConstantValue* cv = (ConstantValue*)malloc(sizeof(v));
+  cv->type = v->type;
+  if (v->type == TP_INT)
+  	cv->intValue = v->intValue;
+  else if (v->type == TP_CHAR)
+  	cv->charValue = v->charValue;
+
+  return cv;	
 }
 
 /******************* Object utilities ******************************/
@@ -88,43 +128,155 @@ Object* createProgramObject(char *programName) {
 }
 
 Object* createConstantObject(char *name) {
-  // TODO
+  // CuongDD: 9/10/2014
+  Object* constant = (Object*)malloc(sizeof(Object));
+  strcpy(constant->name, name);
+  constant->kind = OBJ_CONSTANT;
+  constant->constAttrs = (ConstantAttributes*)malloc(sizeof(ConstantAttributes));
+  constant->constAttrs->value = NULL;
+
+  return constant;
 }
 
 Object* createTypeObject(char *name) {
-  // TODO
+  // CuongDD: 9/10/2014
+  Object* typeObj = (Object*)malloc(sizeof(Object));
+  strcpy(typeObj->name, name);
+  typeObj->kind = OBJ_TYPE;
+  typeObj->typeAttrs = (TypeAttributes*)malloc(sizeof(TypeAttributes));
+  typeObj->typeAttrs->actualType = NULL;	
+
+  return typeObj;
 }
 
 Object* createVariableObject(char *name) {
-  // TODO
+  // CuongDD: 9/10/2014
+  Object* varObj = (Object*)malloc(sizeof(Object));
+  strcpy(varObj->name, name);
+  varObj->kind = OBJ_VARIABLE;
+  varObj->varAttrs = (VariableAttributes)malloc(sizeof(VariableAttributes));
+  varObj->varAttrs->type = NULL;
+  varObj->varAttrs->scope = symtab->currentScope;
+
+  return varObj;
 }
 
 Object* createFunctionObject(char *name) {
-  // TODO
+  // CuongDD: 9/10/2014
+  Object funcObj = (Object*)malloc(sizeof(Object));
+  strcpy(funcObj->name, name);
+  funcObj->kind = OBJ_FUNCTION;
+  funcObj->funcAttrs = (FunctionAttributes*)malloc(sizeof(FunctionAttributes));
+  funcObj->funcAttrs->paramList = NULL;
+  funcObj->funcAttrs->returnType = NULL;
+  funcObj->funcAttrs->scope = createScope(funcObj, symtab->currentScope);
+
+  return funcObj;
 }
 
 Object* createProcedureObject(char *name) {
-  // TODO
+  // CuongDD: 9/10/2014
+  Object* procedure = (Object*)malloc(sizeof(Object));
+  strcpy(procedure->name, name);
+  procedure->kind = OBJ_PROCEDURE;
+  procedure->procAttrs = (ProcedureAttributes*)malloc(sizeof(ProcedureAttributes));
+  procedure->procAttrs->paramList = NULL;
+  procedure->procAttrs->scope = createScope(procedure, symtab->currentScope);
+
+  return procedure;	
 }
 
 Object* createParameterObject(char *name, enum ParamKind kind, Object* owner) {
-  // TODO
+  // CuongDD: 9/10/2014
+  Object* parameter = (Object*)malloc(sizeof(Object));
+  strcpy(parameter->name, name);
+  parameter->kind = OBJ_PARAMETER;
+  parameter->paramAttrs = (ParameterAttributes*)malloc(sizeof(ParameterAttributes));
+  parameter->paramAttrs->kind = kind;
+  parameter->paramAttrs->type = NULL;
+  parameter->paramAttrs->function = owner;
+
+  return parameter;
 }
 
 void freeObject(Object* obj) {
-  // TODO
+  // CuongDD: 9/10/2014
+  if (obj != NULL) {
+  	switch(obj->kind) {
+  		case OBJ_PARAMETER:
+  			if (obj->paramAttrs->type != NULL) {
+  				freeType(obj->paramAttrs->type);
+  			}
+  			if (obj->paramAttrs->function != NULL) {
+  				free(obj->paramAttrs->function);
+  			}
+  		break;
+  		case OBJ_PROCEDURE:
+  			if (obj->procAttrs->paramList != NULL)
+  				freeObjectList(bj->procAttrs->paramList);
+  			if (obj->procAttrs->scope != NULL)
+  				freeScope(obj->procAttrs->scope);
+  		break;
+  		case OBJ_FUNCTION:
+			if (obj->funcAttrs->paramList != NULL)
+				freeObjectList(obj->funcAttrs->paramList);
+			if (obj->funcAttrs->returnType != NULL)
+				freeType(obj->funcAttrs->returnType);
+			if (obj->funcAttrs->scope != NULL)
+				freeScope(obj->funcAttrs->scope);  			
+  		break;
+  		case OBJ_VARIABLE:
+  			if (obj->varAttrs->type != NULL)
+  				freeType(obj->varAttrs->type);
+  			if (obj->varAttrs->scope != NULL)
+  				freeScope(obj->varAttrs->scope);
+  		break;
+  		case OBJ_TYPE:
+  			if (obj->typeAttrs->actualType != NULL)
+  				freeType(obj->typeAttrs->actualType);
+  		break;
+  		case OBJ_CONSTANT:
+  			if (obj->constAttrs->value != NULL)
+  				free(obj->constAttrs->value);
+  		break;
+  		case OBJ_PROGRAM:
+  			if (obj->progAttrs->scope != NULL)
+  				freeScope(obj->progAttrs->scope);
+  		break;
+  		default:
+  		break; 
+  	}
+  }	
+  free(obj);
+  obj = NULL;
 }
 
 void freeScope(Scope* scope) {
-  // TODO
+  // CuongDD: 9/10/2014
+  if (scope->objList != NULL) 
+  	freeObjectList(scope->objList);
+  if (scope->owner != NULL)
+  	free(scope->owner);
+  if (scope->outer != NULL)
+  	freeScope(scope->outer);
+  free(scope);
 }
 
 void freeObjectList(ObjectNode *objList) {
-  // TODO
+  // CuongDD: 9/10/2014
+  if (objList != NULL) {
+  	freeObject(objList->object);
+  	freeObjectList(objList->next);
+  }	
 }
 
 void freeReferenceList(ObjectNode *objList) {
-  // TODO
+  // CuongDD: 9/10/2014
+  if (objList != NULL) {
+  	freeObject(objList->object);
+  	freeReferenceList(objList->next);
+  	objList = NULL;
+  }	
 }
 
 void addObject(ObjectNode **objList, Object* obj) {
@@ -142,7 +294,7 @@ void addObject(ObjectNode **objList, Object* obj) {
 }
 
 Object* findObject(ObjectNode *objList, char *name) {
-  // TODO
+  // CuongDD: 9/10/2014
 }
 
 /******************* others ******************************/
