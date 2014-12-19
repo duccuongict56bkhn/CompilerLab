@@ -713,7 +713,7 @@ Type* compileFactor(void) {
   // TODO: parse a factor and return the factor's type
 
   Object* obj;
-  Type* type = NULL;
+  Type* type;
 
   switch (lookAhead->tokenType) {
   case TK_NUMBER:
